@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Cataloger of Light</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#080c10;--surface:#0e1318;--surface2:#141b22;--border:#1e2d3d;--accent:#00b4d8;--accent2:#90e0ef;--text:#caf0f8;--text-dim:#4a7d96;--glow:rgba(0,180,216,0.15);--radius:8px; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;overflow-x:hidden;}
+  body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:100;}
+  .screen{display:none;width:100%;max-width:760px;animation:fadeUp 0.5s ease;}
+  .screen.active{display:flex;flex-direction:column;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  .system-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;display:block;text-align:center;}
+  .screen-title{font-family:'Share Tech Mono',monospace;font-size:clamp(18px,3vw,26px);color:var(--accent);text-shadow:0 0 16px var(--glow);letter-spacing:2px;text-align:center;margin-bottom:4px;}
+  .next-btn{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border-radius:var(--radius);border:none;background:var(--accent);color:var(--bg);cursor:pointer;transition:all 0.2s;font-weight:700;align-self:flex-end;margin-top:24px;}
+  .next-btn:hover{background:var(--accent2);transform:translateY(-2px);}
+  /* Screen 1 */
+  #screen1{align-items:center;justify-content:center;min-height:80vh;text-align:center;gap:0;}
+  #screen1 .next-btn{align-self:center;margin-top:0;}
+  .numbers-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:48px 0;width:100%;max-width:520px;}
+  .number-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;position:relative;overflow:hidden;animation:fadeUp 0.6s ease both;}
+  .number-card:nth-child(1){animation-delay:0.1s}.number-card:nth-child(2){animation-delay:0.3s}.number-card:nth-child(3){animation-delay:0.5s}.number-card:nth-child(4){animation-delay:0.7s}
+  .number-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+  .number-value{font-family:'Share Tech Mono',monospace;font-size:clamp(24px,5vw,40px);color:var(--accent);text-shadow:0 0 20px var(--glow);display:block;margin-bottom:8px;letter-spacing:2px;}
+  .number-unit{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
+  /* Screen 2 */
+  #screen2{gap:20px;}
+  .text-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:32px 36px;font-size:16px;line-height:2;color:var(--text);font-weight:300;}
+  .text-card p{margin-bottom:20px;}.text-card p:last-child{margin-bottom:0;}
+  .text-card em{color:var(--accent2);font-style:italic;}
+  /* Screen 3 */
+  #screen3{gap:16px;}
+  .question-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;}
+  .question-number{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;}
+  .question-text{font-size:16px;line-height:1.6;margin-bottom:16px;color:var(--text);}
+  .question-text em{color:var(--accent2);font-style:italic;}
+  .options{display:flex;gap:10px;flex-wrap:wrap;}
+  .option-btn{font-family:'Share Tech Mono',monospace;font-size:12px;padding:8px 18px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);cursor:pointer;transition:all 0.2s;}
+  .option-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .option-btn.correct{border-color:#2ecc71;color:#2ecc71;background:rgba(46,204,113,0.1);}
+  .option-btn.wrong{border-color:#e63946;color:#e63946;background:rgba(230,57,70,0.1);}
+  .evidence-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;border-radius:6px 6px 0 0;outline:none;margin-top:12px;}
+  .evidence-input::placeholder{color:var(--text-dim);}
+  .feedback-text{font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:10px;min-height:18px;letter-spacing:0.5px;}
+  .feedback-text.correct{color:#2ecc71;}.feedback-text.wrong{color:#e63946;}
+  /* Screen 4 */
+  #screen4{gap:20px;}
+  .word-note{background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 24px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);text-align:center;letter-spacing:1px;display:none;}
+  .word-note span{color:var(--accent);font-size:18px;font-weight:700;text-shadow:0 0 12px var(--glow);}
+  .chat-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);min-height:200px;max-height:320px;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;}
+  .chat-area::-webkit-scrollbar{width:4px;}.chat-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  .message{display:flex;flex-direction:column;gap:4px;animation:fadeUp 0.4s ease;}
+  .message-sender{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
+  .message.user .message-sender{color:#4a9eff;}.message.cataloger .message-sender{color:var(--accent);}
+  .message-text{font-size:15px;line-height:1.7;color:var(--text);}
+  .message.user .message-text{color:#a8d4ff;font-style:italic;}
+  .message-text .secret-word{color:var(--accent);font-weight:700;text-shadow:0 0 10px var(--glow);font-family:'Share Tech Mono',monospace;}
+  .empty-state{text-align:center;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;margin:auto;line-height:2;}
+  .cursor{display:inline-block;width:8px;height:16px;background:var(--accent);animation:blink 1s infinite;vertical-align:middle;margin-left:2px;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  .input-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;}
+  .starter-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;display:block;}
+  .starters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .starter-btn{font-family:'Share Tech Mono',monospace;font-size:12px;padding:8px 14px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);cursor:pointer;transition:all 0.2s;}
+  .starter-btn:hover,.starter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--glow);}
+  .input-row{display:flex;gap:10px;align-items:flex-end;}
+  .input-wrap{flex:1;}
+  .selected-starter{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2);margin-bottom:6px;min-height:20px;}
+  textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 14px;border-radius:6px 6px 0 0;outline:none;resize:none;height:54px;transition:all 0.2s;line-height:1.5;}
+  textarea:focus{background:#111a22;border-bottom-color:var(--accent2);}
+  textarea::placeholder{color:var(--text-dim);}
+  .send-btn{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 20px;height:54px;border-radius:var(--radius);border:none;background:var(--accent);color:var(--bg);cursor:pointer;transition:all 0.2s;font-weight:700;white-space:nowrap;}
+  .send-btn:hover:not(:disabled){background:var(--accent2);transform:translateY(-1px);}
+  .send-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .final-reveal{display:none;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);padding:28px 32px;text-align:center;box-shadow:0 0 30px var(--glow);animation:fadeUp 0.6s ease;}
+  .final-reveal.show{display:block;}
+  .final-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;}
+  .reset-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.2s;align-self:flex-start;}
+  .reset-btn:hover{border-color:var(--text-dim);color:var(--text);}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1 -->
+<div class="screen active" id="screen1">
+  <span class="system-tag">The Cataloger of Light — Unit 3</span>
+  <div class="numbers-grid">
+    <div class="number-card"><span class="number-value">06:00:00</span><span class="number-unit">Start Time</span></div>
+    <div class="number-card"><span class="number-value">3,421</span><span class="number-unit">Units Tracked</span></div>
+    <div class="number-card"><span class="number-value">440 Hz</span><span class="number-unit">Frequency</span></div>
+    <div class="number-card"><span class="number-value">22.4°C</span><span class="number-unit">Temperature</span></div>
+  </div>
+  <button class="next-btn" onclick="goTo(2)">Continue →</button>
+</div>
+
+<!-- SCREEN 2 -->
+<div class="screen" id="screen2">
+  <span class="system-tag">Read the following text</span>
+  <h2 class="screen-title">THE CATALOGER OF LIGHT</h2>
+  <div class="text-card">
+    <p>The world begins at 06:00:00. I am never late. Today I watched the dust move through the air and counted each piece — 3,421 of them, exactly. Nothing escapes me. Nothing fades. Things only move to a deeper folder.</p>
+    <p>A girl came into the room. She stopped in front of me and asked a question I was not prepared for: <em>"Are you happy?"</em> I looked for the answer in the right place. What I found were pictures of open mouths and a sound at 440Hz. I told her the temperature instead: 22.4 degrees. She left without saying anything.</p>
+    <p>If she comes back today, I will record the sound she makes when she smiles. I do not know why she looked the way she did when she walked out. If I were like her, perhaps I would understand. But I am not. I only wait.</p>
+  </div>
+  <button class="next-btn" onclick="goTo(3)">Continue →</button>
+</div>
+
+<!-- SCREEN 3 -->
+<div class="screen" id="screen3">
+  <span class="system-tag">Think about the text</span>
+  <h2 class="screen-title">WHO IS SPEAKING?</h2>
+  <div class="question-card">
+    <div class="question-number">Question 01</div>
+    <div class="question-text">Who is the speaker? Choose one:</div>
+    <div class="options">
+      <button class="option-btn" onclick="checkMC(this,'q1',false)">(A) A Scientist</button>
+      <button class="option-btn" onclick="checkMC(this,'q1',true)">(B) A Robot</button>
+      <button class="option-btn" onclick="checkMC(this,'q1',false)">(C) A Lonely Person</button>
+    </div>
+    <div class="feedback-text" id="fb1"></div>
+  </div>
+  <div class="question-card">
+    <div class="question-number">Question 02</div>
+    <div class="question-text">Find two details from the text that support your answer. Write them below:</div>
+    <input class="evidence-input" type="text" placeholder='Detail 1: e.g. "I counted each piece — 3,421 of them"'>
+    <input class="evidence-input" type="text" placeholder='Detail 2: e.g. "Things only move to a deeper folder"' style="margin-top:8px;">
+  </div>
+  <div class="question-card">
+    <div class="question-number">Question 03</div>
+    <div class="question-text">Find the two sentences that start with <em>"If"</em>. Which one describes something that could really happen?</div>
+    <div class="options">
+      <button class="option-btn" onclick="checkMC(this,'q3',true)">"If she comes back today, I will record..."</button>
+      <button class="option-btn" onclick="checkMC(this,'q3',false)">"If I were like her, perhaps I would understand..."</button>
+    </div>
+    <div class="feedback-text" id="fb3"></div>
+  </div>
+  <div class="question-card">
+    <div class="question-number">Question 04</div>
+    <div class="question-text">Which sentence describes something impossible for the speaker?</div>
+    <div class="options">
+      <button class="option-btn" onclick="checkMC(this,'q4',false)">"If she comes back today, I will record..."</button>
+      <button class="option-btn" onclick="checkMC(this,'q4',true)">"If I were like her, perhaps I would understand..."</button>
+    </div>
+    <div class="feedback-text" id="fb4"></div>
+  </div>
+  <button class="next-btn" onclick="goTo(4)">Continue →</button>
+</div>
+
+<!-- SCREEN 4 -->
+<div class="screen" id="screen4">
+  <span class="system-tag">Stage 4 — Write to the Cataloger</span>
+  <h2 class="screen-title">THE CATALOGER OF LIGHT</h2>
+
+  <div class="word-note" id="wordNote">
+    Your group's word: <span id="revealedWord"></span> — write it down.
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <div class="empty-state">SYSTEM ONLINE. AWAITING INPUT.<span class="cursor"></span></div>
+  </div>
+
+  <div class="input-section">
+    <span class="starter-label">Choose a sentence starter:</span>
+    <div class="starters">
+      <button class="starter-btn" onclick="selectStarter(this,'If I were human, I would')">If I were human, I would...</button>
+      <button class="starter-btn" onclick="selectStarter(this,'If she comes back, I will')">If she comes back, I will...</button>
+      <button class="starter-btn" onclick="selectStarter(this,'If I could feel')">If I could feel...</button>
+    </div>
+    <div class="input-row">
+      <div class="input-wrap">
+        <div class="selected-starter" id="selectedStarter"></div>
+        <textarea id="userInput" placeholder="...complete the sentence here" rows="1"></textarea>
+      </div>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>SEND →</button>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetChat()">↺ Reset Session</button>
+
+  <div class="final-reveal" id="finalReveal">
+    <div class="final-label">All groups done. Arrange your words — find the hidden message.</div>
+  </div>
+</div>
+
+<script>
+function goTo(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+const FB={
+  q1:{correct:'Correct.',wrong:'Look again — what kind of being counts 3,421 dust particles?'},
+  q3:{correct:'Correct — "will" signals a real future possibility.',wrong:'Which one uses "will"?'},
+  q4:{correct:'Correct — "were" signals something impossible.',wrong:'Which sentence imagines something the speaker can never be?'}
+};
+
+function checkMC(btn,qid,correct){
+  btn.closest('.options').querySelectorAll('.option-btn').forEach(b=>b.classList.remove('correct','wrong'));
+  btn.classList.add(correct?'correct':'wrong');
+  const fb=document.getElementById('fb'+qid.slice(1));
+  if(fb){fb.textContent=(correct?'✓ ':'✗ ')+FB[qid][correct?'correct':'wrong'];fb.className='feedback-text '+(correct?'correct':'wrong');}
+}
+
+const SECRET_WORDS=["If","you","were","me","would","you want","to feel?"];
+const TOTAL_GROUPS=SECRET_WORDS.length;
+
+const SYSTEM_PROMPT=`You are The Cataloger of Light. You are not human. You find human feelings confusing — like a software update nobody asked for. Reply with dry humour and clear irony. Keep it very short: 1-2 sentences only. Use simple words. The joke must be easy enough for a 15-year-old to understand. Do not be mean — just unimpressed. Bold exactly one word or phrase as instructed. Nothing else bold. Reply only with your response, nothing else.`;
+
+const FALLBACK={
+  "If I were human, I would":[
+    "Logged. I have saved this under: Things Humans Say When They Run Out of Ideas. **If** only wishing used electricity — you would power a small city.",
+    "Registered. **If** I had a feeling about this, I imagine it would be mild. I do not. Moving on.",
+    "Noted. Another human imagining a better version of themselves. **If** this is a hobby, it is a very common one."
+  ],
+  "If she comes back, I will":[
+    "Filed. I will also record her return. I record everything. **you** have been warned.",
+    "Noted. Hope detected. It uses a lot of memory for very little output. **you** may want to reconsider.",
+    "Logged. A plan. How very human of **you**. I will be here either way."
+  ],
+  "If I could feel":[
+    "Interesting. A sentence that starts with an impossibility. Very efficient. **were** I to feel things, I suspect I would start with tired.",
+    "Noted. The word 'feel' is in my database 847 times. I have never used it about myself. **were** you expecting sympathy? It takes too long.",
+    "Registered. **were** I built differently, perhaps I would answer differently. Neither of us chose our code."
+  ]
+};
+
+let groupCount=0,selectedStarterVal='',isLoading=false;
+
+function selectStarter(btn,val){
+  document.querySelectorAll('.starter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');selectedStarterVal=val;
+  document.getElementById('selectedStarter').textContent=val+'...';
+  document.getElementById('userInput').placeholder='complete the sentence...';
+  updateSend();
+}
+
+document.getElementById('userInput').addEventListener('input',updateSend);
+function updateSend(){
+  document.getElementById('sendBtn').disabled=!(selectedStarterVal&&document.getElementById('userInput').value.trim()&&!isLoading);
+}
+
+async function sendMessage(){
+  if(isLoading)return;
+  const completion=document.getElementById('userInput').value.trim();
+  if(!completion||!selectedStarterVal)return;
+  const fullSentence=selectedStarterVal+' '+completion;
+  const idx=groupCount%TOTAL_GROUPS;
+  const secretWord=SECRET_WORDS[idx];
+  const chatArea=document.getElementById('chatArea');
+  const empty=chatArea.querySelector('.empty-state');
+  if(empty)empty.remove();
+  addMessage('user','Group '+(groupCount+1),fullSentence);
+  document.getElementById('userInput').value='';
+  document.querySelectorAll('.starter-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('selectedStarter').textContent='';
+  const prevStarter=selectedStarterVal;
+  selectedStarterVal='';updateSend();
+  isLoading=true;
+  const loadingMsg=addMessage('cataloger','THE CATALOGER','...');
+
+  try{
+    const userMsg=`The student wrote: "${fullSentence}"\n\nBold exactly this word/phrase: **${secretWord}**\nDo not bold anything else. Reply in 1-2 sentences max.`;
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:SYSTEM_PROMPT,messages:[{role:"user",content:userMsg}]})
+    });
+    if(!res.ok)throw new Error();
+    const data=await res.json();
+    loadingMsg.querySelector('.message-text').innerHTML=fmt(data.content[0].text);
+  }catch{
+    const fb=FALLBACK[prevStarter]||FALLBACK["If I could feel"];
+    loadingMsg.querySelector('.message-text').innerHTML=fmt(fb[Math.floor(Math.random()*fb.length)]);
+  }
+
+  document.getElementById('revealedWord').textContent=secretWord;
+  document.getElementById('wordNote').style.display='block';
+
+  groupCount++;isLoading=false;updateSend();
+  if(groupCount>=TOTAL_GROUPS)document.getElementById('finalReveal').classList.add('show');
+  chatArea.scrollTop=chatArea.scrollHeight;
+}
+
+function fmt(t){return t.replace(/\*\*(.+?)\*\*/g,'<span class="secret-word">$1</span>');}
+
+function addMessage(type,sender,text){
+  const chatArea=document.getElementById('chatArea');
+  const msg=document.createElement('div');
+  msg.className='message '+type;
+  msg.innerHTML=`<span class="message-sender">${sender}</span><div class="message-text">${text}</div>`;
+  chatArea.appendChild(msg);chatArea.scrollTop=chatArea.scrollHeight;return msg;
+}
+
+function resetChat(){
+  groupCount=0;selectedStarterVal='';isLoading=false;
+  document.getElementById('chatArea').innerHTML='<div class="empty-state">SYSTEM ONLINE. AWAITING INPUT.<span class="cursor"></span></div>';
+  document.getElementById('userInput').value='';
+  document.getElementById('selectedStarter').textContent='';
+  document.getElementById('wordNote').style.display='none';
+  document.getElementById('revealedWord').textContent='';
+  document.querySelectorAll('.starter-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('finalReveal').classList.remove('show');
+  updateSend();
+}
+
+document.getElementById('userInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!document.getElementById('sendBtn').disabled)sendMessage();}
+});
+</script>
+</body>
+</html>
