@@ -3,201 +3,732 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Cataloger of Light</title>
+<title>The Cataloger of Light — Teacher's Notes & Lesson</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#080c10;--surface:#0e1318;--surface2:#141b22;--border:#1e2d3d;--accent:#00b4d8;--accent2:#90e0ef;--text:#caf0f8;--text-dim:#4a7d96;--glow:rgba(0,180,216,0.15);--radius:8px; }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;overflow-x:hidden;}
-  body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:100;}
-  .screen{display:none;width:100%;max-width:760px;animation:fadeUp 0.5s ease;}
-  .screen.active{display:flex;flex-direction:column;}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-  .system-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;display:block;text-align:center;}
-  .screen-title{font-family:'Share Tech Mono',monospace;font-size:clamp(18px,3vw,26px);color:var(--accent);text-shadow:0 0 16px var(--glow);letter-spacing:2px;text-align:center;margin-bottom:4px;}
-  .next-btn{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border-radius:var(--radius);border:none;background:var(--accent);color:var(--bg);cursor:pointer;transition:all 0.2s;font-weight:700;align-self:flex-end;margin-top:24px;}
-  .next-btn:hover{background:var(--accent2);transform:translateY(-2px);}
-  /* Screen 1 */
-  #screen1{align-items:center;justify-content:center;min-height:80vh;text-align:center;gap:0;}
-  #screen1 .next-btn{align-self:center;margin-top:0;}
-  .numbers-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:48px 0;width:100%;max-width:520px;}
-  .number-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;position:relative;overflow:hidden;animation:fadeUp 0.6s ease both;}
-  .number-card:nth-child(1){animation-delay:0.1s}.number-card:nth-child(2){animation-delay:0.3s}.number-card:nth-child(3){animation-delay:0.5s}.number-card:nth-child(4){animation-delay:0.7s}
-  .number-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);}
-  .number-value{font-family:'Share Tech Mono',monospace;font-size:clamp(24px,5vw,40px);color:var(--accent);text-shadow:0 0 20px var(--glow);display:block;margin-bottom:8px;letter-spacing:2px;}
-  .number-unit{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
-  /* Screen 2 */
-  #screen2{gap:20px;}
-  .text-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:32px 36px;font-size:16px;line-height:2;color:var(--text);font-weight:300;}
-  .text-card p{margin-bottom:20px;}.text-card p:last-child{margin-bottom:0;}
-  .text-card em{color:var(--accent2);font-style:italic;}
-  /* Screen 3 */
-  #screen3{gap:16px;}
-  .question-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;}
-  .question-number{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;}
-  .question-text{font-size:16px;line-height:1.6;margin-bottom:16px;color:var(--text);}
-  .question-text em{color:var(--accent2);font-style:italic;}
-  .options{display:flex;gap:10px;flex-wrap:wrap;}
-  .option-btn{font-family:'Share Tech Mono',monospace;font-size:12px;padding:8px 18px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);cursor:pointer;transition:all 0.2s;}
-  .option-btn:hover{border-color:var(--accent);color:var(--accent);}
-  .option-btn.correct{border-color:#2ecc71;color:#2ecc71;background:rgba(46,204,113,0.1);}
-  .option-btn.wrong{border-color:#e63946;color:#e63946;background:rgba(230,57,70,0.1);}
-  .evidence-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;border-radius:6px 6px 0 0;outline:none;margin-top:12px;}
-  .evidence-input::placeholder{color:var(--text-dim);}
-  .feedback-text{font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:10px;min-height:18px;letter-spacing:0.5px;}
-  .feedback-text.correct{color:#2ecc71;}.feedback-text.wrong{color:#e63946;}
-  /* Screen 4 */
-  #screen4{gap:20px;}
-  .word-note{background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 24px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);text-align:center;letter-spacing:1px;display:none;}
-  .word-note span{color:var(--accent);font-size:18px;font-weight:700;text-shadow:0 0 12px var(--glow);}
-  .chat-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);min-height:200px;max-height:320px;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;}
-  .chat-area::-webkit-scrollbar{width:4px;}.chat-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-  .message{display:flex;flex-direction:column;gap:4px;animation:fadeUp 0.4s ease;}
-  .message-sender{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
-  .message.user .message-sender{color:#4a9eff;}.message.cataloger .message-sender{color:var(--accent);}
-  .message-text{font-size:15px;line-height:1.7;color:var(--text);}
-  .message.user .message-text{color:#a8d4ff;font-style:italic;}
-  .message-text .secret-word{color:var(--accent);font-weight:700;text-shadow:0 0 10px var(--glow);font-family:'Share Tech Mono',monospace;}
-  .empty-state{text-align:center;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;margin:auto;line-height:2;}
-  .cursor{display:inline-block;width:8px;height:16px;background:var(--accent);animation:blink 1s infinite;vertical-align:middle;margin-left:2px;}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-  .input-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;}
-  .starter-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;display:block;}
-  .starters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .starter-btn{font-family:'Share Tech Mono',monospace;font-size:12px;padding:8px 14px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);cursor:pointer;transition:all 0.2s;}
-  .starter-btn:hover,.starter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--glow);}
-  .input-row{display:flex;gap:10px;align-items:flex-end;}
-  .input-wrap{flex:1;}
-  .selected-starter{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2);margin-bottom:6px;min-height:20px;}
-  textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 14px;border-radius:6px 6px 0 0;outline:none;resize:none;height:54px;transition:all 0.2s;line-height:1.5;}
-  textarea:focus{background:#111a22;border-bottom-color:var(--accent2);}
-  textarea::placeholder{color:var(--text-dim);}
-  .send-btn{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 20px;height:54px;border-radius:var(--radius);border:none;background:var(--accent);color:var(--bg);cursor:pointer;transition:all 0.2s;font-weight:700;white-space:nowrap;}
-  .send-btn:hover:not(:disabled){background:var(--accent2);transform:translateY(-1px);}
-  .send-btn:disabled{opacity:0.4;cursor:not-allowed;}
-  .final-reveal{display:none;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);padding:28px 32px;text-align:center;box-shadow:0 0 30px var(--glow);animation:fadeUp 0.6s ease;}
-  .final-reveal.show{display:block;}
-  .final-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;}
-  .reset-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all 0.2s;align-self:flex-start;}
-  .reset-btn:hover{border-color:var(--text-dim);color:var(--text);}
+/* ════════════════════════════════════
+   TOKENS
+════════════════════════════════════ */
+:root {
+  --bg:#080c10;--surface:#0e1318;--surface2:#141b22;--border:#1e2d3d;
+  --accent:#00b4d8;--accent2:#90e0ef;--text:#caf0f8;--text-dim:#4a7d96;
+  --glow:rgba(0,180,216,0.15);--radius:8px;
+  --green:#2ecc71;--red:#e63946;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+
+/* ════════════════════════════════════
+   VIEW SYSTEM
+════════════════════════════════════ */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+  pointer-events:none;z-index:1000;
+}
+
+#tn-view{min-height:100vh;}
+#ls-view{display:none;position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;}
+#ls-view.active{display:block;}
+
+/* ════════════════════════════════════
+   TEACHER'S NOTES
+════════════════════════════════════ */
+.tn-wrap{max-width:880px;margin:0 auto;padding:0 24px 80px;}
+
+/* HERO */
+.tn-hero{
+  text-align:center;padding:52px 0 36px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:44px;
+}
+.tn-system-tag{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:4px;color:var(--text-dim);
+  text-transform:uppercase;display:block;margin-bottom:18px;
+}
+.tn-title{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(22px,4vw,42px);
+  color:var(--accent);
+  text-shadow:0 0 24px var(--glow);
+  letter-spacing:3px;margin-bottom:8px;
+}
+.tn-sub{
+  font-size:clamp(14px,1.8vw,17px);font-weight:300;
+  color:var(--text-dim);max-width:600px;
+  margin:16px auto 0;line-height:1.8;
+}
+
+/* STATS STRIP */
+.tn-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:12px;margin-bottom:44px;
+}
+.tn-stat{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 14px;text-align:center;
+  position:relative;overflow:hidden;
+  transition:border-color .2s,transform .2s;
+}
+.tn-stat:hover{border-color:var(--accent);transform:translateY(-3px);}
+.tn-stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.tn-stat-val{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(14px,2.4vw,20px);color:var(--accent);
+  text-shadow:0 0 14px var(--glow);display:block;margin-bottom:6px;letter-spacing:2px;
+}
+.tn-stat-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
+
+/* SECTION */
+.tn-section{margin-bottom:44px;}
+.tn-section-head{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.tn-num{
+  font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;
+  background:var(--accent);color:var(--bg);
+  width:36px;height:36px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;
+}
+.tn-section-title{
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(14px,2.5vw,20px);letter-spacing:2px;color:var(--text);
+}
+.tn-section-title span{color:var(--accent);}
+
+.tn-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:3px solid var(--accent);border-radius:var(--radius);
+  padding:24px 28px;
+}
+.tn-card p{color:rgba(202,240,248,.8);font-size:15px;line-height:1.85;font-weight:300;}
+.tn-card p+p{margin-top:12px;}
+.tn-card strong{color:var(--text);font-weight:600;}
+.tn-card em{color:var(--accent2);font-style:italic;}
+
+/* WHO IS IT FOR grid */
+.tn-aud{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.tn-aud-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px 18px;
+  display:flex;gap:12px;
+  transition:border-color .2s;
+}
+.tn-aud-item:hover{border-color:var(--accent);}
+.tn-aud-ico{font-size:20px;flex-shrink:0;margin-top:2px;}
+.tn-aud-item h4{
+  font-family:'Share Tech Mono',monospace;font-size:12px;
+  letter-spacing:1px;color:var(--accent);margin-bottom:5px;
+}
+.tn-aud-item p{font-size:13px;color:var(--text-dim);line-height:1.6;}
+
+/* FIT grid */
+.tn-fit{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.tn-fit-col{background:var(--surface);border:1px solid;border-radius:var(--radius);overflow:hidden;}
+.tn-fit-col.yes{border-color:var(--green);}
+.tn-fit-col.no{border-color:var(--red);}
+.tn-fit-head{
+  font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;
+  padding:12px 18px;
+}
+.tn-fit-col.yes .tn-fit-head{background:rgba(46,204,113,.1);color:var(--green);}
+.tn-fit-col.no  .tn-fit-head{background:rgba(230,57,70,.1);color:var(--red);}
+.tn-fit-body{padding:14px 18px;}
+.tn-fit-body li{
+  list-style:none;font-size:13px;color:rgba(202,240,248,.7);
+  padding:6px 0 6px 22px;position:relative;font-weight:300;
+}
+.tn-fit-col.yes .tn-fit-body li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;}
+.tn-fit-col.no  .tn-fit-body li::before{content:'✕';position:absolute;left:0;color:var(--red);font-weight:700;}
+
+/* OBJECTIVES pills */
+.tn-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+.tn-pill{
+  background:rgba(0,180,216,.07);border:1px solid rgba(0,180,216,.3);
+  border-radius:4px;padding:6px 14px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
+  color:var(--accent2);
+}
+
+/* FLOW */
+.tn-flow{display:flex;flex-direction:column;gap:10px;}
+.tn-flow-row{
+  display:grid;grid-template-columns:48px 1fr 68px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:border-color .2s;
+}
+.tn-flow-row:hover{border-color:var(--accent);}
+.tn-flow-num{
+  background:var(--accent);
+  font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--bg);
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+}
+.tn-flow-mid{padding:14px 18px;}
+.tn-flow-name{
+  font-family:'Share Tech Mono',monospace;font-size:13px;
+  letter-spacing:1px;color:var(--accent);margin-bottom:4px;
+}
+.tn-flow-desc{font-size:13px;color:var(--text-dim);line-height:1.6;font-weight:300;}
+.tn-flow-time{
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(0,180,216,.04);gap:2px;
+}
+.tn-flow-time .t{font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--text);line-height:1;}
+.tn-flow-time .u{font-size:9px;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase;}
+
+/* TIPS */
+.tn-tips{display:flex;flex-direction:column;gap:10px;}
+.tn-tip{
+  display:flex;gap:14px;
+  background:var(--surface);border-left:3px solid var(--accent);
+  border-radius:0 var(--radius) var(--radius) 0;padding:14px 18px;
+}
+.tn-tip-num{
+  font-family:'Share Tech Mono',monospace;font-size:16px;
+  color:var(--accent);flex-shrink:0;
+}
+.tn-tip p{font-size:13.5px;color:rgba(202,240,248,.8);line-height:1.7;font-weight:300;}
+.tn-tip strong{color:var(--text);font-weight:600;}
+
+/* ANSWER KEY */
+.tn-key{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.tn-key-row{
+  display:grid;grid-template-columns:120px 1fr;
+  border-bottom:1px solid var(--border);
+}
+.tn-key-row:last-child{border-bottom:none;}
+.tn-key-q{
+  background:var(--surface2);
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
+  color:var(--accent);padding:14px 16px;
+  display:flex;align-items:flex-start;border-right:1px solid var(--border);
+}
+.tn-key-a{padding:14px 18px;font-size:13px;color:rgba(202,240,248,.8);line-height:1.7;font-weight:300;}
+.tn-key-a strong{color:var(--text);font-weight:600;}
+.tn-key-a em{color:var(--accent2);font-style:italic;}
+
+/* SECRET WORD table */
+.tn-secret{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.tn-secret-head{
+  background:rgba(0,180,216,.08);border-bottom:1px solid var(--border);
+  padding:12px 20px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--accent);
+  display:grid;grid-template-columns:60px 1fr 1fr;gap:12px;
+}
+.tn-secret-row{
+  padding:10px 20px;border-bottom:1px solid rgba(30,45,61,.5);
+  display:grid;grid-template-columns:60px 1fr 1fr;gap:12px;align-items:center;
+  transition:background .15s;
+}
+.tn-secret-row:last-child{border-bottom:none;}
+.tn-secret-row:hover{background:rgba(0,180,216,.04);}
+.tn-secret-grp{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);}
+.tn-secret-word{
+  font-family:'Share Tech Mono',monospace;font-size:16px;
+  color:var(--accent);text-shadow:0 0 10px var(--glow);letter-spacing:2px;
+}
+.tn-secret-starter{font-size:12px;color:var(--text-dim);font-weight:300;}
+.tn-secret-msg{
+  margin-top:14px;
+  background:rgba(0,180,216,.05);border:1px solid rgba(0,180,216,.2);
+  border-radius:var(--radius);padding:14px 18px;
+  font-family:'Share Tech Mono',monospace;font-size:13px;
+  color:var(--accent);letter-spacing:1px;text-align:center;
+}
+
+/* LAUNCH BUTTON */
+.tn-launch-wrap{text-align:center;margin-top:52px;}
+.tn-launch-btn{
+  display:inline-flex;align-items:center;gap:12px;
+  font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:3px;
+  background:var(--accent);color:var(--bg);
+  border:none;border-radius:var(--radius);
+  padding:18px 56px;cursor:pointer;font-weight:700;
+  box-shadow:0 0 30px var(--glow);
+  transition:background .2s,transform .15s,box-shadow .2s;
+}
+.tn-launch-btn:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 0 50px var(--glow);}
+.tn-launch-btn:active{transform:translateY(1px);}
+.tn-launch-hint{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  letter-spacing:2px;color:var(--text-dim);margin-top:10px;
+}
+.tn-foot{
+  text-align:center;margin-top:48px;padding-top:24px;
+  border-top:1px solid var(--border);
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  letter-spacing:2px;color:var(--text-dim);
+}
+
+@media(max-width:640px){
+  .tn-stats{grid-template-columns:1fr 1fr;}
+  .tn-aud,.tn-fit{grid-template-columns:1fr;}
+  .tn-flow-row{grid-template-columns:40px 1fr 56px;}
+}
+
+/* ════════════════════════════════════
+   LESSON STYLES (original, untouched)
+════════════════════════════════════ */
+.ls-screen{display:none;width:100%;max-width:760px;animation:fadeUp .5s ease;margin:0 auto;padding:40px 20px;}
+.ls-screen.active{display:flex;flex-direction:column;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* back button inside lesson */
+.ls-back-bar{
+  position:sticky;top:0;z-index:300;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 20px;
+  background:rgba(8,12,16,.9);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(8px);
+}
+.ls-back-btn{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;
+  background:transparent;color:var(--text-dim);
+  border:1px solid var(--border);border-radius:4px;
+  padding:6px 14px;cursor:pointer;transition:all .2s;
+}
+.ls-back-btn:hover{color:var(--text);border-color:var(--text-dim);}
+.ls-progress{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  letter-spacing:2px;color:var(--text-dim);
+}
+
+.system-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;display:block;text-align:center;}
+.screen-title{font-family:'Share Tech Mono',monospace;font-size:clamp(18px,3vw,26px);color:var(--accent);text-shadow:0 0 16px var(--glow);letter-spacing:2px;text-align:center;margin-bottom:4px;}
+.next-btn{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border-radius:var(--radius);border:none;background:var(--accent);color:var(--bg);cursor:pointer;transition:all .2s;font-weight:700;align-self:flex-end;margin-top:24px;}
+.next-btn:hover{background:var(--accent2);transform:translateY(-2px);}
+
+/* Screen 1 */
+#screen1{align-items:center;justify-content:center;min-height:70vh;text-align:center;gap:0;}
+#screen1 .next-btn{align-self:center;margin-top:0;}
+.numbers-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:48px 0;width:100%;max-width:520px;}
+.number-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px 24px;position:relative;overflow:hidden;animation:fadeUp .6s ease both;}
+.number-card:nth-child(1){animation-delay:.1s}.number-card:nth-child(2){animation-delay:.3s}.number-card:nth-child(3){animation-delay:.5s}.number-card:nth-child(4){animation-delay:.7s}
+.number-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);box-shadow:0 0 12px var(--accent);}
+.number-value{font-family:'Share Tech Mono',monospace;font-size:clamp(24px,5vw,40px);color:var(--accent);text-shadow:0 0 20px var(--glow);display:block;margin-bottom:8px;letter-spacing:2px;}
+.number-unit{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;}
+
+/* Screen 2 */
+#screen2{gap:20px;}
+.text-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:32px 36px;font-size:16px;line-height:2;color:var(--text);font-weight:300;}
+.text-card p{margin-bottom:20px;}.text-card p:last-child{margin-bottom:0;}
+.text-card em{color:var(--accent2);font-style:italic;}
+
+/* Screen 3 */
+#screen3{gap:16px;}
+.question-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;}
+.question-number{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;}
+.question-text{font-size:16px;line-height:1.6;margin-bottom:16px;color:var(--text);}
+.question-text em{color:var(--accent2);font-style:italic;}
+.options{display:flex;gap:10px;flex-wrap:wrap;}
+.option-btn{font-family:'Share Tech Mono',monospace;font-size:12px;padding:8px 18px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);cursor:pointer;transition:all .2s;}
+.option-btn:hover{border-color:var(--accent);color:var(--accent);}
+.option-btn.correct{border-color:var(--green);color:var(--green);background:rgba(46,204,113,0.1);}
+.option-btn.wrong{border-color:var(--red);color:var(--red);background:rgba(230,57,70,0.1);}
+.evidence-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;border-radius:6px 6px 0 0;outline:none;margin-top:12px;}
+.evidence-input::placeholder{color:var(--text-dim);}
+.feedback-text{font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:10px;min-height:18px;letter-spacing:.5px;}
+.feedback-text.correct{color:var(--green);}.feedback-text.wrong{color:var(--red);}
+
+/* Screen 4 */
+#screen4{gap:20px;}
+.word-note{background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);padding:14px 24px;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--text-dim);text-align:center;letter-spacing:1px;display:none;}
+.word-note span{color:var(--accent);font-size:18px;font-weight:700;text-shadow:0 0 12px var(--glow);}
+.chat-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);min-height:200px;max-height:320px;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;}
+.chat-area::-webkit-scrollbar{width:4px;}.chat-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.message{display:flex;flex-direction:column;gap:4px;animation:fadeUp .4s ease;}
+.message-sender{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);}
+.message.user .message-sender{color:#4a9eff;}.message.cataloger .message-sender{color:var(--accent);}
+.message-text{font-size:15px;line-height:1.7;color:var(--text);}
+.message.user .message-text{color:#a8d4ff;font-style:italic;}
+.message-text .secret-word{color:var(--accent);font-weight:700;text-shadow:0 0 10px var(--glow);font-family:'Share Tech Mono',monospace;}
+.empty-state{text-align:center;color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;margin:auto;line-height:2;}
+.cursor{display:inline-block;width:8px;height:16px;background:var(--accent);animation:blink 1s infinite;vertical-align:middle;margin-left:2px;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.input-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;}
+.starter-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;display:block;}
+.starters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.starter-btn{font-family:'Share Tech Mono',monospace;font-size:12px;padding:8px 14px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text-dim);cursor:pointer;transition:all .2s;}
+.starter-btn:hover,.starter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--glow);}
+.input-row{display:flex;gap:10px;align-items:flex-end;}
+.input-wrap{flex:1;}
+.selected-starter{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent2);margin-bottom:6px;min-height:20px;}
+textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-bottom:2px solid var(--accent);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 14px;border-radius:6px 6px 0 0;outline:none;resize:none;height:54px;transition:all .2s;line-height:1.5;}
+textarea:focus{background:#111a22;border-bottom-color:var(--accent2);}
+textarea::placeholder{color:var(--text-dim);}
+.send-btn{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:0 20px;height:54px;border-radius:var(--radius);border:none;background:var(--accent);color:var(--bg);cursor:pointer;transition:all .2s;font-weight:700;white-space:nowrap;}
+.send-btn:hover:not(:disabled){background:var(--accent2);transform:translateY(-1px);}
+.send-btn:disabled{opacity:.4;cursor:not-allowed;}
+.final-reveal{display:none;background:var(--surface);border:1px solid var(--accent);border-radius:var(--radius);padding:28px 32px;text-align:center;box-shadow:0 0 30px var(--glow);animation:fadeUp .6s ease;}
+.final-reveal.show{display:block;}
+.final-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;margin-bottom:12px;}
+.reset-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:8px 16px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;transition:all .2s;align-self:flex-start;}
+.reset-btn:hover{border-color:var(--text-dim);color:var(--text);}
 </style>
 </head>
 <body>
 
-<!-- SCREEN 1 -->
-<div class="screen active" id="screen1">
-  <span class="system-tag">The Cataloger of Light — Unit 3</span>
-  <div class="numbers-grid">
-    <div class="number-card"><span class="number-value">06:00:00</span><span class="number-unit">Start Time</span></div>
-    <div class="number-card"><span class="number-value">3,421</span><span class="number-unit">Units Tracked</span></div>
-    <div class="number-card"><span class="number-value">440 Hz</span><span class="number-unit">Frequency</span></div>
-    <div class="number-card"><span class="number-value">22.4°C</span><span class="number-unit">Temperature</span></div>
-  </div>
-  <button class="next-btn" onclick="goTo(2)">Continue →</button>
-</div>
+<!-- ══════════════════════════════════════════
+     TEACHER'S NOTES VIEW
+══════════════════════════════════════════ -->
+<div id="tn-view">
+<div class="tn-wrap">
 
-<!-- SCREEN 2 -->
-<div class="screen" id="screen2">
-  <span class="system-tag">Read the following text</span>
-  <h2 class="screen-title">THE CATALOGER OF LIGHT</h2>
-  <div class="text-card">
-    <p>The world begins at 06:00:00. I am never late. Today I watched the dust move through the air and counted each piece — 3,421 of them, exactly. Nothing escapes me. Nothing fades. Things only move to a deeper folder.</p>
-    <p>A girl came into the room. She stopped in front of me and asked a question I was not prepared for: <em>"Are you happy?"</em> I looked for the answer in the right place. What I found were pictures of open mouths and a sound at 440Hz. I told her the temperature instead: 22.4 degrees. She left without saying anything.</p>
-    <p>If she comes back today, I will record the sound she makes when she smiles. I do not know why she looked the way she did when she walked out. If I were like her, perhaps I would understand. But I am not. I only wait.</p>
+  <!-- HERO -->
+  <div class="tn-hero">
+    <span class="tn-system-tag">Teacher's Notes — Unit 3</span>
+    <div class="tn-title">THE CATALOGER OF LIGHT</div>
+    <div class="tn-sub">A sci-fi reading &amp; creative writing lesson that teaches <em>real and hypothetical conditionals</em> through the voice of a machine that has never felt anything — and is slowly trying to understand why.</div>
   </div>
-  <button class="next-btn" onclick="goTo(3)">Continue →</button>
-</div>
 
-<!-- SCREEN 3 -->
-<div class="screen" id="screen3">
-  <span class="system-tag">Think about the text</span>
-  <h2 class="screen-title">WHO IS SPEAKING?</h2>
-  <div class="question-card">
-    <div class="question-number">Question 01</div>
-    <div class="question-text">Who is the speaker? Choose one:</div>
-    <div class="options">
-      <button class="option-btn" onclick="checkMC(this,'q1',false)">(A) A Scientist</button>
-      <button class="option-btn" onclick="checkMC(this,'q1',true)">(B) A Robot</button>
-      <button class="option-btn" onclick="checkMC(this,'q1',false)">(C) A Lonely Person</button>
+  <!-- STATS -->
+  <div class="tn-stats">
+    <div class="tn-stat"><span class="tn-stat-val">B1</span><span class="tn-stat-label">Level</span></div>
+    <div class="tn-stat"><span class="tn-stat-val">40 min</span><span class="tn-stat-label">Duration</span></div>
+    <div class="tn-stat"><span class="tn-stat-val">4</span><span class="tn-stat-label">Screens</span></div>
+    <div class="tn-stat"><span class="tn-stat-val">Groups</span><span class="tn-stat-label">Grouping</span></div>
+  </div>
+
+  <!-- 1. WHAT IS IT -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">01</div>
+      <div class="tn-section-title">What is <span>this lesson</span>?</div>
     </div>
-    <div class="feedback-text" id="fb1"></div>
-  </div>
-  <div class="question-card">
-    <div class="question-number">Question 02</div>
-    <div class="question-text">Find two details from the text that support your answer. Write them below:</div>
-    <input class="evidence-input" type="text" placeholder='Detail 1: e.g. "I counted each piece — 3,421 of them"'>
-    <input class="evidence-input" type="text" placeholder='Detail 2: e.g. "Things only move to a deeper folder"' style="margin-top:8px;">
-  </div>
-  <div class="question-card">
-    <div class="question-number">Question 03</div>
-    <div class="question-text">Find the two sentences that start with <em>"If"</em>. Which one describes something that could really happen?</div>
-    <div class="options">
-      <button class="option-btn" onclick="checkMC(this,'q3',true)">"If she comes back today, I will record..."</button>
-      <button class="option-btn" onclick="checkMC(this,'q3',false)">"If I were like her, perhaps I would understand..."</button>
+    <div class="tn-card">
+      <p><strong>The Cataloger of Light</strong> is a four-screen interactive lesson built around a short first-person text narrated by a machine-like being that catalogues the world with obsessive precision but cannot process human emotion. Students read the text, identify who is speaking and why, then analyse two conditional sentences embedded in the narrative.</p>
+      <p>The lesson reaches its creative peak in Screen 4, where groups take turns writing to the Cataloger using a conditional sentence starter. The Cataloger — powered by an AI — replies in character with dry humour and irony, and <strong>bolds a secret word</strong> inside each response. Once all groups have submitted, the bolded words are arranged to reveal a hidden message. The lesson ends with laughter, a grammar point locked in, and a text students actually remember.</p>
     </div>
-    <div class="feedback-text" id="fb3"></div>
   </div>
-  <div class="question-card"> 
-    <div class="question-number">Question 04</div>
-    <div class="question-text">Which sentence describes something impossible for the speaker?</div>
-    <div class="options">
-      <button class="option-btn" onclick="checkMC(this,'q4',false)">"If she comes back today, I will record..."</button>
-      <button class="option-btn" onclick="checkMC(this,'q4',true)">"If I were like her, perhaps I would understand..."</button>
+
+  <!-- 2. WHO IS IT FOR -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">02</div>
+      <div class="tn-section-title">Who is it <span>for</span>?</div>
     </div>
-    <div class="feedback-text" id="fb4"></div>
-  </div>
-  <button class="next-btn" onclick="goTo(4)">Continue →</button>
-</div>
-
-<!-- SCREEN 4 -->
-<div class="screen" id="screen4">
-  <span class="system-tag">Stage 4 — Write to the Cataloger</span>
-  <h2 class="screen-title">THE CATALOGER OF LIGHT</h2>
-
-  <div class="word-note" id="wordNote">
-    Your group's word: <span id="revealedWord"></span> — write it down.
-  </div>
-
-  <div class="chat-area" id="chatArea">
-    <div class="empty-state">SYSTEM ONLINE. AWAITING INPUT.<span class="cursor"></span></div>
-  </div>
-
-  <div class="input-section">
-    <span class="starter-label">Choose a sentence starter:</span>
-    <div class="starters">
-      <button class="starter-btn" onclick="selectStarter(this,'If I were human, I would')">If I were human, I would...</button>
-      <button class="starter-btn" onclick="selectStarter(this,'If she comes back, I will')">If she comes back, I will...</button>
-      <button class="starter-btn" onclick="selectStarter(this,'If I could feel')">If I could feel...</button>
+    <div class="tn-aud">
+      <div class="tn-aud-item"><span class="tn-aud-ico">🎓</span><div><h4>LEVEL B1</h4><p>High-school learners (ages 14–17) who know basic conditionals but haven't distinguished real vs. hypothetical in context.</p></div></div>
+      <div class="tn-aud-item"><span class="tn-aud-ico">✍️</span><div><h4>CREATIVE WRITING CLASSES</h4><p>The voice of the Cataloger gives reluctant writers an unusual character to push back against — the constraint sparks creativity.</p></div></div>
+      <div class="tn-aud-item"><span class="tn-aud-ico">📖</span><div><h4>LITERATURE / ELT CLASSES</h4><p>Short enough to be a standalone text; rich enough for inference, characterisation, and voice analysis.</p></div></div>
+      <div class="tn-aud-item"><span class="tn-aud-ico">🖥️</span><div><h4>PROJECTOR / SMARTBOARD ROOMS</h4><p>Designed to run as a single screen shared with the class. Groups take turns at the device for Screen 4.</p></div></div>
     </div>
-    <div class="input-row">
-      <div class="input-wrap">
-        <div class="selected-starter" id="selectedStarter"></div>
-        <textarea id="userInput" placeholder="...complete the sentence here" rows="1"></textarea>
+  </div>
+
+  <!-- 3. GOOD FIT -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">03</div>
+      <div class="tn-section-title">Is it the <span>right fit</span>?</div>
+    </div>
+    <div class="tn-fit">
+      <div class="tn-fit-col yes">
+        <div class="tn-fit-head">✓ GREAT FOR</div>
+        <ul class="tn-fit-body">
+          <li>Introducing or revising real vs. hypothetical conditionals</li>
+          <li>Classes that respond well to unusual, atmospheric texts</li>
+          <li>Lessons where you want student-generated language</li>
+          <li>Groups of 4–7 (one secret word per group)</li>
+          <li>A memorable grammar anchor students will recall later</li>
+        </ul>
       </div>
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>SEND →</button>
+      <div class="tn-fit-col no">
+        <div class="tn-fit-head">✕ LESS SUITABLE FOR</div>
+        <ul class="tn-fit-body">
+          <li>Students with no prior exposure to conditional forms</li>
+          <li>Classes larger than ~28 without splitting into sub-groups</li>
+          <li>No internet connection (Screen 4 uses AI; fallbacks exist)</li>
+          <li>Exam-drill focused sessions needing written output</li>
+          <li>Very short lessons under 35 minutes</li>
+        </ul>
+      </div>
     </div>
   </div>
 
-  <button class="reset-btn" onclick="resetChat()">↺ Reset Session</button>
-
-  <div class="final-reveal" id="finalReveal">
-    <div class="final-label">All groups done. Arrange your words — find the hidden message.</div>
+  <!-- 4. OBJECTIVES -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">04</div>
+      <div class="tn-section-title">Learning <span>objectives</span></div>
+    </div>
+    <div class="tn-card">
+      <p>By the end of the lesson, students will be able to:</p>
+      <div class="tn-pills">
+        <span class="tn-pill">Identify speaker voice &amp; character from a text</span>
+        <span class="tn-pill">Support inferences with textual evidence</span>
+        <span class="tn-pill">Distinguish real (Type 1) conditionals</span>
+        <span class="tn-pill">Distinguish hypothetical (Type 2) conditionals</span>
+        <span class="tn-pill">Produce a conditional sentence in a creative context</span>
+        <span class="tn-pill">Recognise irony and understatement in character voice</span>
+      </div>
+    </div>
   </div>
+
+  <!-- 5. LESSON FLOW -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">05</div>
+      <div class="tn-section-title">Lesson <span>flow</span> (4 screens)</div>
+    </div>
+    <div class="tn-flow">
+      <div class="tn-flow-row">
+        <div class="tn-flow-num">1</div>
+        <div class="tn-flow-mid">
+          <div class="tn-flow-name">SYSTEM DATA</div>
+          <div class="tn-flow-desc">Lead-in. Four numbers appear on screen (06:00:00, 3421 units, 440 Hz, 22.4°C). Students predict what kind of character logs data like this. No explanation yet.</div>
+        </div>
+        <div class="tn-flow-time"><span class="t">3</span><span class="u">min</span></div>
+      </div>
+      <div class="tn-flow-row">
+        <div class="tn-flow-num">2</div>
+        <div class="tn-flow-mid">
+          <div class="tn-flow-name">THE TEXT</div>
+          <div class="tn-flow-desc">Students read "The Cataloger of Light." Teacher reads aloud or students read silently. The two conditional sentences are present but not yet highlighted. First impressions discussion.</div>
+        </div>
+        <div class="tn-flow-time"><span class="t">8</span><span class="u">min</span></div>
+      </div>
+      <div class="tn-flow-row">
+        <div class="tn-flow-num">3</div>
+        <div class="tn-flow-mid">
+          <div class="tn-flow-name">WHO IS SPEAKING?</div>
+          <div class="tn-flow-desc">Four comprehension questions. Q1: MC — who is the speaker? Q2: find two pieces of textual evidence. Q3–Q4: identify which conditional sentence is real (Type 1) and which is hypothetical (Type 2). Self-check with instant feedback.</div>
+        </div>
+        <div class="tn-flow-time"><span class="t">10</span><span class="u">min</span></div>
+      </div>
+      <div class="tn-flow-row">
+        <div class="tn-flow-num">4</div>
+        <div class="tn-flow-mid">
+          <div class="tn-flow-name">WRITE TO THE CATALOGER</div>
+          <div class="tn-flow-desc">Each group chooses a sentence starter, completes it, and submits. The Cataloger replies with dry humour and bolds one secret word per group. After all groups submit, students arrange the words to reveal a hidden message: <em>"If you were me, would you want to feel?"</em></div>
+        </div>
+        <div class="tn-flow-time"><span class="t">15</span><span class="u">min</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. TEACHING TIPS -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">06</div>
+      <div class="tn-section-title">Teaching <span>tips</span></div>
+    </div>
+    <div class="tn-tips">
+      <div class="tn-tip"><span class="tn-tip-num">①</span><p><strong>Don't explain Screen 1.</strong> Let students sit with the numbers. When they ask "what is this?", that's the hook. Say: "You'll find out."</p></div>
+      <div class="tn-tip"><span class="tn-tip-num">②</span><p><strong>Read the text aloud yourself.</strong> A flat, precise, slightly robotic delivery makes the irony land. Pause on <em>"I told her the temperature instead: 22.4 degrees."</em></p></div>
+      <div class="tn-tip"><span class="tn-tip-num">③</span><p><strong>Q3 vs Q4 is the grammar core.</strong> "If she comes back, I <strong>will</strong> record" = real → Type 1. "If I <strong>were</strong> like her" = impossible → Type 2. Write both on the board side by side before moving to Screen 4.</p></div>
+      <div class="tn-tip"><span class="tn-tip-num">④</span><p><strong>One device per group in Screen 4.</strong> Groups come up one at a time, choose a starter, write their completion, and submit. The rest of the class discusses while they type. The AI reply takes a few seconds.</p></div>
+      <div class="tn-tip"><span class="tn-tip-num">⑤</span><p><strong>The secret word is bolded in the reply.</strong> Tell students to write it down — don't say why. The message only clicks when all groups have gone. The reveal is the payoff.</p></div>
+      <div class="tn-tip"><span class="tn-tip-num">⑥</span><p><strong>If the AI is unavailable,</strong> built-in fallback responses are already loaded. The lesson runs the same — just without the personalised reply.</p></div>
+    </div>
+  </div>
+
+  <!-- 7. ANSWER KEY -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">07</div>
+      <div class="tn-section-title">Answer <span>key</span></div>
+    </div>
+    <div class="tn-key">
+      <div class="tn-key-row">
+        <div class="tn-key-q">Q1</div>
+        <div class="tn-key-a"><strong>B — A Robot.</strong> Textual clues: counts 3,421 dust particles; searches for happiness in a database; gives a temperature reading instead of an emotional answer.</div>
+      </div>
+      <div class="tn-key-row">
+        <div class="tn-key-q">Q2</div>
+        <div class="tn-key-a">Accept any two clear textual quotations. Strong examples: <em>"I counted each piece — 3,421 of them, exactly"</em> / <em>"Things only move to a deeper folder"</em> / <em>"I looked for the answer in the right place"</em> / <em>"I told her the temperature instead."</em></div>
+      </div>
+      <div class="tn-key-row">
+        <div class="tn-key-q">Q3</div>
+        <div class="tn-key-a"><strong>"If she comes back today, I will record…"</strong> — uses <em>will</em>; describes a real future possibility (Type 1 conditional).</div>
+      </div>
+      <div class="tn-key-row">
+        <div class="tn-key-q">Q4</div>
+        <div class="tn-key-a"><strong>"If I were like her, perhaps I would understand…"</strong> — uses <em>were / would</em>; describes something impossible for the speaker (Type 2 / hypothetical conditional).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. SECRET MESSAGE -->
+  <div class="tn-section">
+    <div class="tn-section-head">
+      <div class="tn-num">08</div>
+      <div class="tn-section-title">The <span>secret message</span></div>
+    </div>
+    <div class="tn-secret">
+      <div class="tn-secret-head">
+        <span>GROUP</span><span>SECRET WORD</span><span>SENTENCE STARTER</span>
+      </div>
+      <div class="tn-secret-row"><span class="tn-secret-grp">G — 01</span><span class="tn-secret-word">If</span><span class="tn-secret-starter">If I were human, I would…</span></div>
+      <div class="tn-secret-row"><span class="tn-secret-grp">G — 02</span><span class="tn-secret-word">you</span><span class="tn-secret-starter">If she comes back, I will…</span></div>
+      <div class="tn-secret-row"><span class="tn-secret-grp">G — 03</span><span class="tn-secret-word">were</span><span class="tn-secret-starter">If I could feel…</span></div>
+      <div class="tn-secret-row"><span class="tn-secret-grp">G — 04</span><span class="tn-secret-word">me</span><span class="tn-secret-starter">If I were human, I would…</span></div>
+      <div class="tn-secret-row"><span class="tn-secret-grp">G — 05</span><span class="tn-secret-word">would</span><span class="tn-secret-starter">If she comes back, I will…</span></div>
+      <div class="tn-secret-row"><span class="tn-secret-grp">G — 06</span><span class="tn-secret-word">you want</span><span class="tn-secret-starter">If I could feel…</span></div>
+      <div class="tn-secret-row"><span class="tn-secret-grp">G — 07</span><span class="tn-secret-word">to feel?</span><span class="tn-secret-starter">If I were human, I would…</span></div>
+    </div>
+    <div class="tn-secret-msg">HIDDEN MESSAGE: "If you were me, would you want to feel?"</div>
+  </div>
+
+  <!-- LAUNCH -->
+  <div class="tn-launch-wrap">
+    <button class="tn-launch-btn" onclick="launchLesson()">▶ LAUNCH THE LESSON</button>
+    <div class="tn-launch-hint">SWITCHES TO THE INTERACTIVE ACTIVITY · ESC TO RETURN TO NOTES</div>
+  </div>
+
+  <div class="tn-foot">THE CATALOGER OF LIGHT — ELT LESSON · CONDITIONALS TYPE 1 &amp; 2 · B1</div>
 </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     LESSON VIEW
+══════════════════════════════════════════ -->
+<div id="ls-view">
+
+  <!-- sticky back bar -->
+  <div class="ls-back-bar">
+    <button class="ls-back-btn" onclick="backToNotes()">◀ TEACHER'S NOTES</button>
+    <span class="ls-progress" id="lsProgress">SCREEN 1 / 4</span>
+  </div>
+
+  <!-- SCREEN 1 -->
+  <div class="ls-screen active" id="screen1">
+    <span class="system-tag">The Cataloger of Light — Unit 3</span>
+    <div class="numbers-grid">
+      <div class="number-card"><span class="number-value">06:00:00</span><span class="number-unit">Start Time</span></div>
+      <div class="number-card"><span class="number-value">3,421</span><span class="number-unit">Units Tracked</span></div>
+      <div class="number-card"><span class="number-value">440 Hz</span><span class="number-unit">Frequency</span></div>
+      <div class="number-card"><span class="number-value">22.4°C</span><span class="number-unit">Temperature</span></div>
+    </div>
+    <button class="next-btn" onclick="goTo(2)">Continue →</button>
+  </div>
+
+  <!-- SCREEN 2 -->
+  <div class="ls-screen" id="screen2">
+    <span class="system-tag">Read the following text</span>
+    <h2 class="screen-title">THE CATALOGER OF LIGHT</h2>
+    <div class="text-card">
+      <p>The world begins at 06:00:00. I am never late. Today I watched the dust move through the air and counted each piece — 3,421 of them, exactly. Nothing escapes me. Nothing fades. Things only move to a deeper folder.</p>
+      <p>A girl came into the room. She stopped in front of me and asked a question I was not prepared for: <em>"Are you happy?"</em> I looked for the answer in the right place. What I found were pictures of open mouths and a sound at 440Hz. I told her the temperature instead: 22.4 degrees. She left without saying anything.</p>
+      <p>If she comes back today, I will record the sound she makes when she smiles. I do not know why she looked the way she did when she walked out. If I were like her, perhaps I would understand. But I am not. I only wait.</p>
+    </div>
+    <button class="next-btn" onclick="goTo(3)">Continue →</button>
+  </div>
+
+  <!-- SCREEN 3 -->
+  <div class="ls-screen" id="screen3">
+    <span class="system-tag">Think about the text</span>
+    <h2 class="screen-title">WHO IS SPEAKING?</h2>
+    <div class="question-card">
+      <div class="question-number">Question 01</div>
+      <div class="question-text">Who is the speaker? Choose one:</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkMC(this,'q1',false)">(A) A Scientist</button>
+        <button class="option-btn" onclick="checkMC(this,'q1',true)">(B) A Robot</button>
+        <button class="option-btn" onclick="checkMC(this,'q1',false)">(C) A Lonely Person</button>
+      </div>
+      <div class="feedback-text" id="fb1"></div>
+    </div>
+    <div class="question-card">
+      <div class="question-number">Question 02</div>
+      <div class="question-text">Find two details from the text that support your answer. Write them below:</div>
+      <input class="evidence-input" type="text" placeholder='Detail 1: e.g. "I counted each piece — 3,421 of them"'>
+      <input class="evidence-input" type="text" placeholder='Detail 2: e.g. "Things only move to a deeper folder"' style="margin-top:8px;">
+    </div>
+    <div class="question-card">
+      <div class="question-number">Question 03</div>
+      <div class="question-text">Find the two sentences that start with <em>"If"</em>. Which one describes something that could really happen?</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkMC(this,'q3',true)">"If she comes back today, I will record..."</button>
+        <button class="option-btn" onclick="checkMC(this,'q3',false)">"If I were like her, perhaps I would understand..."</button>
+      </div>
+      <div class="feedback-text" id="fb3"></div>
+    </div>
+    <div class="question-card">
+      <div class="question-number">Question 04</div>
+      <div class="question-text">Which sentence describes something impossible for the speaker?</div>
+      <div class="options">
+        <button class="option-btn" onclick="checkMC(this,'q4',false)">"If she comes back today, I will record..."</button>
+        <button class="option-btn" onclick="checkMC(this,'q4',true)">"If I were like her, perhaps I would understand..."</button>
+      </div>
+      <div class="feedback-text" id="fb4"></div>
+    </div>
+    <button class="next-btn" onclick="goTo(4)">Continue →</button>
+  </div>
+
+  <!-- SCREEN 4 -->
+  <div class="ls-screen" id="screen4">
+    <span class="system-tag">Stage 4 — Write to the Cataloger</span>
+    <h2 class="screen-title">THE CATALOGER OF LIGHT</h2>
+    <div class="word-note" id="wordNote">Your group's word: <span id="revealedWord"></span> — write it down.</div>
+    <div class="chat-area" id="chatArea">
+      <div class="empty-state">SYSTEM ONLINE. AWAITING INPUT.<span class="cursor"></span></div>
+    </div>
+    <div class="input-section">
+      <span class="starter-label">Choose a sentence starter:</span>
+      <div class="starters">
+        <button class="starter-btn" onclick="selectStarter(this,'If I were human, I would')">If I were human, I would...</button>
+        <button class="starter-btn" onclick="selectStarter(this,'If she comes back, I will')">If she comes back, I will...</button>
+        <button class="starter-btn" onclick="selectStarter(this,'If I could feel')">If I could feel...</button>
+      </div>
+      <div class="input-row">
+        <div class="input-wrap">
+          <div class="selected-starter" id="selectedStarter"></div>
+          <textarea id="userInput" placeholder="...complete the sentence here" rows="1"></textarea>
+        </div>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>SEND →</button>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="resetChat()">↺ Reset Session</button>
+    <div class="final-reveal" id="finalReveal">
+      <div class="final-label">All groups done. Arrange your words — find the hidden message.</div>
+    </div>
+  </div>
+
+</div><!-- /ls-view -->
 
 <script>
+// ── VIEW SWITCH ──
+function launchLesson(){
+  document.getElementById('ls-view').classList.add('active');
+  document.body.style.overflow='hidden';
+  window.scrollTo(0,0);
+}
+function backToNotes(){
+  document.getElementById('ls-view').classList.remove('active');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') backToNotes(); });
+
+// ── LESSON NAVIGATION ──
+let currentScreen=1;
 function goTo(n){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ls-screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen'+n).classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
+  currentScreen=n;
+  document.getElementById('lsProgress').textContent='SCREEN '+n+' / 4';
+  document.getElementById('ls-view').scrollTo({top:0,behavior:'smooth'});
 }
 
+// ── Q&A LOGIC ──
 const FB={
   q1:{correct:'Correct.',wrong:'Look again — what kind of being counts 3,421 dust particles?'},
   q3:{correct:'Correct — "will" signals a real future possibility.',wrong:'Which one uses "will"?'},
   q4:{correct:'Correct — "were" signals something impossible.',wrong:'Which sentence imagines something the speaker can never be?'}
 };
-
 function checkMC(btn,qid,correct){
   btn.closest('.options').querySelectorAll('.option-btn').forEach(b=>b.classList.remove('correct','wrong'));
   btn.classList.add(correct?'correct':'wrong');
@@ -205,11 +736,10 @@ function checkMC(btn,qid,correct){
   if(fb){fb.textContent=(correct?'✓ ':'✗ ')+FB[qid][correct?'correct':'wrong'];fb.className='feedback-text '+(correct?'correct':'wrong');}
 }
 
+// ── SCREEN 4: AI CHAT ──
 const SECRET_WORDS=["If","you","were","me","would","you want","to feel?"];
 const TOTAL_GROUPS=SECRET_WORDS.length;
-
 const SYSTEM_PROMPT=`You are The Cataloger of Light. You are not human. You find human feelings confusing — like a software update nobody asked for. Reply with dry humour and clear irony. Keep it very short: 1-2 sentences only. Use simple words. The joke must be easy enough for a 15-year-old to understand. Do not be mean — just unimpressed. Bold exactly one word or phrase as instructed. Nothing else bold. Reply only with your response, nothing else.`;
-
 const FALLBACK={
   "If I were human, I would":[
     "Logged. I have saved this under: Things Humans Say When They Run Out of Ideas. **If** only wishing used electricity — you would power a small city.",
@@ -237,7 +767,6 @@ function selectStarter(btn,val){
   document.getElementById('userInput').placeholder='complete the sentence...';
   updateSend();
 }
-
 document.getElementById('userInput').addEventListener('input',updateSend);
 function updateSend(){
   document.getElementById('sendBtn').disabled=!(selectedStarterVal&&document.getElementById('userInput').value.trim()&&!isLoading);
@@ -261,7 +790,6 @@ async function sendMessage(){
   selectedStarterVal='';updateSend();
   isLoading=true;
   const loadingMsg=addMessage('cataloger','THE CATALOGER','...');
-
   try{
     const userMsg=`The student wrote: "${fullSentence}"\n\nBold exactly this word/phrase: **${secretWord}**\nDo not bold anything else. Reply in 1-2 sentences max.`;
     const res=await fetch("https://api.anthropic.com/v1/messages",{
@@ -275,10 +803,8 @@ async function sendMessage(){
     const fb=FALLBACK[prevStarter]||FALLBACK["If I could feel"];
     loadingMsg.querySelector('.message-text').innerHTML=fmt(fb[Math.floor(Math.random()*fb.length)]);
   }
-
   document.getElementById('revealedWord').textContent=secretWord;
   document.getElementById('wordNote').style.display='block';
-
   groupCount++;isLoading=false;updateSend();
   if(groupCount>=TOTAL_GROUPS)document.getElementById('finalReveal').classList.add('show');
   chatArea.scrollTop=chatArea.scrollHeight;
